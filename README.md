@@ -17,6 +17,8 @@ skills/otter-framework/      ← Claude Code 技能（主体）
     04-layout-anim.md        ← 网格布局、动画
     05-online.md             ← P2P 网络与线程安全
     06-browser-cef.md        ← 嵌入浏览器（CEF/WebView2）、视频编解码器、GPU 路径陷阱
+    07-oop-ui.md             ← 大型 UI 的 OOP 拆分、组件组织、状态管理
+    08-debug-performance.md  ← 排错清单、性能调优、后端切换、GPU/浏览器疑难
 examples/                    ← 可编译示例（每个文件头部含编译命令）
   counter.cpp                ← 入门：按钮/点击/悬停 + 共享状态
   gradient_showcase.cpp      ← 渐变、贝塞尔曲线、圆弧动画
@@ -43,6 +45,15 @@ cp -r skills/otter-framework ~/.claude/skills/
 ```
 
 之后在 Claude Code 里相关任务会自动触发该技能，或用 `/otter-framework` 调用。
+
+## 设计目标
+
+这个 skill 不是 API 速查表，而是 Otter 的写代码手册：
+
+- 先拆状态，再拆组件，再绑事件。
+- 先做能跑的最小界面，再扩成大型 UI。
+- 先排错，再压性能，再切后端或 GPU 路径。
+- 碰到浏览器、视频、线程、命中测试这类高风险点，优先读对应分册。
 
 ## 快速上手（最小程序）
 
