@@ -1,6 +1,6 @@
 ---
 name: otter-framework
-description: 用 Otter（C++ header-only GUI 框架）构建、重构或排查桌面/跨平台 UI，涵盖窗口、图层、绘制、布局、输入、控件、性能、GPU/后端切换、P2P 和嵌入浏览器；当要教 AI 用这个框架写代码时使用本技能。
+description: 用 Otter（C++ header-only GUI 框架）构建、重构或排查桌面/跨平台 UI、高级文档编辑、内联 IME 或 OpenAI Responses 集成；涵盖窗口、图层、绘制、布局、输入、控件、性能、GPU/后端切换、P2P 和嵌入浏览器；当要教 AI 用这个框架写代码时使用本技能。
 ---
 
 # Otter 框架使用指南（写给 AI — v4.0 完整版）
@@ -10,7 +10,7 @@ Otter 是一个 **header-only 的 C++20 GUI 框架**。核心范式：
 你通过给图层挂回调（`on_render` / `on_update` / `on_click` …）来描述界面与交互，
 框架每帧驱动 `tick()`（逻辑）+ `flush()`（绘制）。
 
-> **阅读顺序**：先读本文件（共 12 节），再按需读 `references/` 下的 11 个分册。
+> **阅读顺序**：先读本文件（共 12 节），再按需读 `references/` 下的 12 个分册。
 > **改动接口前必读仓库根目录的 `接口.md`，改完同步更新它。**
 
 ---
@@ -38,10 +38,10 @@ Otter 通过 **OtterFrameworkInstaller.exe**（Python + Tkinter GUI）自动部�
   ├── OtterWindowFactory.h  ← 跨平台窗口工厂
   ├── OtterPortableOpenGLRenderer.h ← 便携 OpenGL 后端
   ├── OtterRaylibRenderer.h ← Raylib 渲染后端
-  ├── app/                  ← 扩展组件（OtterChromeNode / OtterWebView2Node）
+  ├── app/                  ← 扩展组件（浏览器、DocumentEditor、OpenAI Responses）
   ├── platform/             ← 平台后端（GLFW / 安卓）
   ├── examples/             ← 可编译运行的示例
-  ├── tests/                ← 测试（test_core_headless.cpp）
+  ├── tests/                ← 测试（核心、文本编辑、Responses、IME）
   ├── docs/                 ← 完整文档（62 篇）
   └── OtterFramework.props  ← MSBuild 属性文件（自动引入头文件路径和库链接）
 ```
@@ -175,6 +175,9 @@ g++ -std=c++20 -I. tests/test_core_headless.cpp -o test_core && ./test_core
 # 一键全量测试
 bash tests/run_tests.sh
 
+# 可选文本编辑 / Responses 扩展回归
+bash tests/run_tests.sh extensions
+
 # 生成文档
 bash generate_docs.sh
 ```
@@ -204,6 +207,8 @@ bash generate_docs.sh
 | `enable_scroll(content_h)` / `auto_scroll(bool)` | 窗口级滚动 |
 | `enable_drop_files(bool)` | 文件拖放 |
 | `set_keyboard_target(...)` | 注册键盘焦点 |
+| `on_dpi_changed/on_escape/on_key_down[_intercept]/on_char_intercept/on_alt_hotkey` | 原生消息回调与可消费拦截 |
+| `on_ime_inline_enabled/on_ime_composition/result/end` | 内联输入法预编辑与上屏回调 |
 | `on_ready(cb)` / `on_close(cb)` | 生命周期回调 |
 | `creat["name"]` → `LayerRef` | 语法糖创建子层 |
 | `get["name"]` → `Layer*` | 取根画布或子层 |
@@ -273,6 +278,13 @@ bash generate_docs.sh
 - `RadioButtonEx` / `RadioGroup` — 单选按钮
 - `Dropdown` — 下拉选择框
 - `TitleText` — 标题文字标签
+
+### 可选高级文本编辑与 AI（详见 `references/12-text-ai.md`）
+- `Otter::Text::TextDocument` — 文档、选区、撤销/重做、查找替换、统计和标题大纲
+- `Otter::Text::DocumentEditor` — 可见行虚拟绘制、CJK 排版、鼠标/键盘选择、平滑滚动、内联 IME
+- `Otter::Text::TextInput` — 中文标点配对、段首缩进、智能空格、全/半角转换
+- `Otter::Text::TextLayout` / `app/OtterTextFileIO.h` — 自定义排版视图与保留编码、行尾的文件读写
+- `Otter::AI` — `app/OtterOpenAIResponses.h`，Windows/WinHTTP 的可选 Responses API 客户端
 
 ### 颜色（`Color`）
 ```cpp
@@ -381,7 +393,7 @@ if (h) h->bring_to_front();                // operator bool + operator->
 
 ---
 
-## 11. 参考分册（references/ — 共 11 册）
+## 11. 参考分册（references/ — 共 12 册）
 
 | # | 文件 | 内容 |
 |---|------|------|
@@ -396,6 +408,7 @@ if (h) h->bring_to_front();                // operator bool + operator->
 | 09 | `09-widgets.md` | **内置控件 API 全解**（TextField / TextArea / ImageView / Checkbox / Dropdown 等） |
 | 10 | `10-file-io-patterns.md` | **文件读写 / 剪贴板 / 编码 / 持久化模式** |
 | 11 | `11-source-internals.md` | **源码结构导航 + 关键实现细节 + 如何阅读框架源码排查问题** |
+| 12 | `12-text-ai.md` | **高级文本编辑、内联 IME、文件读写和 OpenAI Responses 集成** |
 
 仓库根 `接口.md` 是接口权威清单——任何接口改动都要读它并同步更新。
 
@@ -406,6 +419,6 @@ if (h) h->bring_to_front();                // operator bool + operator->
 - **框架名称**: Otter（水獭图形框架） / OtterCreat 4.0 Professional
 - **语言标准**: C++20（header-only）
 - **主要平台**: Windows 10/11（Direct2D + DirectWrite）、跨平台（OpenGL + GLFW）、Android
-- **命名空间**: `Otter`（核心）、`Otter::Demo`（示例）、`Otter::Online`（P2P）、`Otter::Platform`（平台抽象）
+- **命名空间**: `Otter`（核心）、`Otter::Text`（高级文本编辑）、`Otter::AI`（可选 Responses 客户端）、`Otter::Demo`（示例）、`Otter::Online`（P2P）、`Otter::Platform`（平台抽象）
 - **编译要求**: MSVC 2022+ 或 g++ 15.2+（MinGW-w64），C++20，安卓需 C++20
 - **安装方式**: `OtterFrameworkInstaller.exe`（自动部署到 VS）或手动复制头文件到 include 路径

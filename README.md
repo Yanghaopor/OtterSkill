@@ -5,6 +5,9 @@
 Otter 的核心范式：**窗口（otterwindow）→ 图层树（Layer）→ 绘画链（PaintChain）**。
 你给图层挂回调（`on_render` / `on_update` / `on_click` …），框架每帧驱动渲染与交互。
 
+当前技能内容已同步 Otter v1.0.8：高级文本编辑、内联 IME、窗口消息拦截和可选
+OpenAI Responses 客户端。
+
 ## 仓库内容
 
 ```
@@ -19,6 +22,10 @@ skills/otter-framework/      ← Claude Code 技能（主体）
     06-browser-cef.md        ← 嵌入浏览器（CEF/WebView2）、视频编解码器、GPU 路径陷阱
     07-oop-ui.md             ← 大型 UI 的 OOP 拆分、组件组织、状态管理
     08-debug-performance.md  ← 排错清单、性能调优、后端切换、GPU/浏览器疑难
+    09-widgets.md            ← 内置控件 API（TextField / TextArea / ImageView 等）
+    10-file-io-patterns.md   ← 文件读写、剪贴板、编码、持久化模式
+    11-source-internals.md   ← 源码结构导航与排查关键实现
+    12-text-ai.md            ← 高级文本编辑、内联 IME、文件读写、OpenAI Responses
 examples/                    ← 可编译示例（每个文件头部含编译命令）
   counter.cpp                ← 入门：按钮/点击/悬停 + 共享状态
   gradient_showcase.cpp      ← 渐变、贝塞尔曲线、圆弧动画
@@ -28,9 +35,9 @@ examples/                    ← 可编译示例（每个文件头部含编译�
   glass_window.cpp           ← 玻璃/亚克力窗口
   glass_webview2.cpp         ← 嵌入 WebView2
   cef_bilibili.cpp           ← 嵌入 CEF 浏览器（OSR），打开 bilibili
-tests/                       ← 测试与一键脚本
+tests/                       ← 核心测试与一键脚本（扩展回归在实际框架根目录执行）
   test_core_headless.cpp     ← 核心层无渲染单元测试（跨平台，g++ 可跑）
-  run_tests.sh               ← 编译/测试一键脚本（core/headers/examples）
+  run_tests.sh               ← 编译/测试一键脚本（core/headers/examples；框架 v1.0.8 另有 extensions）
 ```
 
 ## 作为 Claude Code 技能安装
@@ -54,6 +61,7 @@ cp -r skills/otter-framework ~/.claude/skills/
 - 先做能跑的最小界面，再扩成大型 UI。
 - 先排错，再压性能，再切后端或 GPU 路径。
 - 碰到浏览器、视频、线程、命中测试这类高风险点，优先读对应分册。
+- 做长文编辑、中文输入法或 AI 辅助写作时，优先读 `12-text-ai.md`。
 
 ## 快速上手（最小程序）
 
@@ -82,6 +90,8 @@ int main()
 - 纯框架（无浏览器）：g++ 15+ 或 MSVC，C++20。
 - 跨平台核心测试无需 GPU：`g++ -std=c++20 -I. tests/test_core_headless.cpp -o t && ./t`
 - Windows GUI 链接库：`d2d1 dwrite windowscodecs gdi32 user32 ole32 dwmapi opengl32 winhttp imm32`
+- 在实际 v1.0.8 框架根目录运行扩展回归：`bash tests/run_tests.sh extensions`
+- `app/OtterTextFileIO.h` 的原生文件对话框额外链接 `comdlg32`。
 - 含 CEF 的目标**必须用 MSVC**（libcef 为 MSVC ABI）。详见 `references/06-browser-cef.md`。
 
 > 本仓库仅含技能文档与示例源码，不含 Otter 框架头文件本体与 CEF 运行时；
